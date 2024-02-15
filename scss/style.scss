@@ -1,0 +1,88 @@
+$blue-very-light-color: #3B4663;
+$blue-light-color: #232C43;
+$blue-normal-color: hsl(224, 36%, 15%);
+$blue-dark-color: hsl(223, 31%, 20%);
+$red-color: #D14031;
+$red-deep-color: hsl(6, 70%, 34%);
+$greyish-white-color: #EAE3DC;
+$grey-color: #B3A497;
+$btn-normal-color: #434B5A;
+$btn-blue-color: #626F97;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    background: $blue-very-light-color;
+
+}
+
+.calculator-container {
+    max-width: 30rem;
+    background: transparent;
+
+    .input-container {
+        height: 8rem;
+        background: $blue-dark-color;
+
+        p {
+            caret-color: transparent;
+            pointer-events: none;
+            color: #fff;
+            font-size: 2.5rem;
+            background: $blue-dark-color;
+
+            &:focus,
+            &:active {
+                border: none;
+                outline: none;
+
+            }
+        }
+    }
+
+    .buttons-container {
+        background: $blue-light-color;
+
+        .btn-normal-container,
+        .btn-large-container {
+            height: 5rem;
+            padding: .8rem;
+
+            button {
+                background: $greyish-white-color;
+                color: $btn-normal-color;
+                box-shadow: 0 4px 0 $grey-color;
+                font-size: 1.9rem;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &.btn-delete,
+                &.btn-reset {
+                    color: #fff;
+                    background: $btn-blue-color;
+                    box-shadow: 0 4px 0 $blue-very-light-color;
+                }
+
+                &.btn-equal {
+                    color: #fff;
+                    background: $red-color;
+                    box-shadow: 0 4px 0 $red-deep-color;
+                }
+
+                &.btn-reset,
+                &.btn-equal,
+                &.btn-delete {
+                    font-size: 1.5rem;
+                }
+            }
+        }
+    }
+}
