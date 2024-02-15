@@ -28,10 +28,6 @@ function calculateExpression(expression) {
     }
   });
   nums.push(strNum);
-
-  console.log(nums);
-  console.log(ops);
-
   let i = 0;
 
   // first multiply or divide
@@ -50,13 +46,11 @@ function calculateExpression(expression) {
     }
     if (op === "*" || op === "/") {
       nums[i] = res;
-      const numsLeft = nums.slice(0, i + 1);
-      const numsRight = nums.slice(i + 2);
-      nums = [...numsLeft, ...numsRight];
-
+      // const numsLeft = nums.slice(0, i + 1);
+      // const numsRight = nums.slice(i + 2);
+      // nums = [...numsLeft, ...numsRight];
+      nums = [...nums.slice(0, i + 1), ...nums.slice(i + 2)];
       ops = [...ops.slice(0, i), ...ops.slice(i + 1)];
-
-      console.log(i, nums, ops);
     }
   }
 
@@ -89,10 +83,15 @@ function calculateExpression(expression) {
 
 function validateAndUpdateInput(currentInputValue, keyPressed) {
   const isInitialZero = !currentInputValue.length && keyPressed === "0";
+
+  currentInputValue = currentInputValue.trim();
   const isInitialOperationExceptMinus =
-    !currentInputValue.length &&
+    (!currentInputValue.length ||
+      (currentInputValue.length === 1 &&
+        operations.includes(currentInputValue[0]))) &&
     keyPressed !== "-" &&
     operations.includes(keyPressed);
+
   const isLastDotAndCurrentDot =
     !!currentInputValue.length &&
     currentInputValue.at(-1) === "." &&
