@@ -46,15 +46,12 @@ function calculateExpression(expression) {
     }
     if (op === "*" || op === "/") {
       nums[i] = res;
-      // const numsLeft = nums.slice(0, i + 1);
-      // const numsRight = nums.slice(i + 2);
-      // nums = [...numsLeft, ...numsRight];
       nums = [...nums.slice(0, i + 1), ...nums.slice(i + 2)];
       ops = [...ops.slice(0, i), ...ops.slice(i + 1)];
+      console.log(nums, ops);
     }
   }
 
-  console.log(nums, ops);
   // addition or division
   i = 0;
   while (i < ops.length) {
@@ -76,7 +73,6 @@ function calculateExpression(expression) {
       ops = [...ops.slice(0, i), ...ops.slice(i + 1)];
     }
   }
-  console.log(nums, ops);
 
   return nums[0];
 }
