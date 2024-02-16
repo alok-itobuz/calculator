@@ -47,6 +47,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
 }
 .calculator-container .buttons-container .btn-normal-container button.btn-delete, .calculator-container .buttons-container .btn-normal-container button.btn-reset,
 .calculator-container .buttons-container .btn-large-container button.btn-delete,
@@ -66,4 +67,10 @@ body {
 .calculator-container .buttons-container .btn-large-container button.btn-equal,
 .calculator-container .buttons-container .btn-large-container button.btn-delete {
   font-size: 1.5rem;
+}
+.calculator-container .buttons-container .btn-normal-container button:active,
+.calculator-container .buttons-container .btn-large-container button:active {
+  border: none;
+  transform: translateY(2px);
+  box-shadow: 0 3px 0 #B3A497;
 }/*# sourceMappingURL=style.css.map */

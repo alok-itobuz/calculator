@@ -9,8 +9,30 @@ const allSmallButtonsContainer = document.querySelector(
 const operations = ["+", "-", "*", "/", "^", "!"];
 const specialButtons = ["del", "reset", "="];
 
+// flags
+let isDotPresentBefore = false;
+let isNumPresentBefore = false;
+let prevOperatorCount = 0;
+let zeroEntered = true;
+
+function isOperation(op) {
+  return operations.includes(op);
+}
+
 function isValidLetter(val) {
   return (val >= "0" && val <= "9") || operations.includes(val) || val == ".";
+}
+
+function isOnlyZero(str) {
+  return str.length === 1 && str[0] === "0";
+}
+
+function isNumber(val) {
+  return val >= "0" && val <= "9";
+}
+
+function removeLastChar(str) {
+  return str.slice(0, -1);
 }
 
 function calculateExpression(expression) {
@@ -18,13 +40,20 @@ function calculateExpression(expression) {
   let nums = [],
     ops = [];
   let strNum = "";
+  let flag = 1;
   exprArray.forEach((x, i) => {
-    if ((x >= "0" && x <= "9") || x === "." || i == 0) {
+    if (flag === -1) {
+      strNum += "-";
+      flag = 1;
+    } else if ((x >= "0" && x <= "9") || x === "." || i == 0) {
       strNum += x;
     } else {
       nums.push(strNum);
       strNum = "";
       ops.push(x);
+      if (isOperation(exprArray[i + 1])) {
+        flag = -1;
+      }
     }
   });
   nums.push(strNum);
@@ -77,82 +106,94 @@ function calculateExpression(expression) {
   return nums[0];
 }
 
+function resetAllFlags() {
+  isDotPresentBefore = false;
+  isNumPresentBefore = false;
+  prevOperatorCount = 0;
+  zeroEntered = true;
+}
+
 function validateAndUpdateInput(currentInputValue, keyPressed) {
-  const isInitialZero = !currentInputValue.length && keyPressed === "0";
+  let currentExpression = inputNumbers.textContent.trim();
 
-  currentInputValue = currentInputValue.trim();
-  const isInitialOperationExceptMinus =
-    (!currentInputValue.length ||
-      (currentInputValue.length === 1 &&
-        operations.includes(currentInputValue[0]))) &&
-    keyPressed !== "-" &&
-    operations.includes(keyPressed);
-
-  const isLastDotAndCurrentDot =
-    !!currentInputValue.length &&
-    currentInputValue.at(-1) === "." &&
-    keyPressed === ".";
-
-  if (keyPressed === ".") {
-    let isDotBefore = false;
-    for (let i = currentInputValue.length - 1; i >= 0; i--) {
-      if (currentInputValue[i] === ".") {
-        isDotBefore = true;
-        break;
-      }
+  if (keyPressed === "0") {
+    if (zeroEntered && !isDotPresentBefore && !isNumPresentBefore) {
+      return;
     }
-    if (isDotBefore) return;
-  }
+    currentExpression += keyPressed;
+    zeroEntered = true;
+  } else if (keyPressed === ".") {
+    zeroEntered = false;
+    if (isDotPresentBefore) {
+      return;
+    }
 
-  // if the first value is 0 or first value is any operation except - then return.
-  if (
-    isInitialZero ||
-    isInitialOperationExceptMinus ||
-    isLastDotAndCurrentDot
-  ) {
-    return;
+    currentExpression += keyPressed;
+    isDotPresentBefore = true;
+  } else if (isOperation(keyPressed)) {
+    isNumPresentBefore = false;
+    zeroEntered = false;
+    isDotPresentBefore = false;
+    if (currentExpression.at(-1) === ".") {
+      currentExpression = removeLastChar(currentExpression);
+    }
+    if (keyPressed !== "-" && prevOperatorCount === 0) {
+      if (isOperation(currentExpression.at(-1))) {
+        currentExpression = removeLastChar(currentExpression);
+      }
+      prevOperatorCount = 1;
+      currentExpression += keyPressed;
+    } else if (keyPressed === "-" && prevOperatorCount <= 1) {
+      currentExpression += keyPressed;
+      prevOperatorCount++;
+    }
+  } else if (isNumber(keyPressed)) {
+    prevOperatorCount = 0;
+    zeroEntered = false;
+    isNumPresentBefore = true;
+    if (isOnlyZero(currentExpression)) {
+      currentExpression = "";
+    }
+    currentExpression += keyPressed;
   } else if (specialButtons.includes(keyPressed.toLowerCase())) {
-    if (
-      keyPressed.toLowerCase() === "del" &&
-      !!inputNumbers.textContent.length
-    ) {
-      currentInputValue = currentInputValue.split("");
-      currentInputValue.splice(-1);
-      currentInputValue = currentInputValue.join("");
-      inputNumbers.textContent = currentInputValue;
-    } else if (keyPressed.toLowerCase() === "reset") {
-      inputNumbers.textContent = "";
-    } else if (keyPressed === "=") {
-      let expr = inputNumbers.textContent;
-      const lastChar = inputNumbers.textContent
-        .toString()
-        .charAt(inputNumbers.textContent.length - 1);
-      if (operations.includes(lastChar) || lastChar === ".") {
-        expr = expr.split("");
-        expr.splice(-1);
-        expr = expr.join("");
+    const keyPressedLower = keyPressed.toLowerCase();
+    if (keyPressedLower === "del") {
+      let lastChar = currentExpression.at(-1);
+      if (!currentExpression.textContent) {
+        currentExpression = 0;
+        inputNumbers.textContent = currentExpression;
+        return;
       }
-      console.log(expr);
-      const result = calculateExpression(expr);
-      inputNumbers.textContent = result;
+      if (lastChar === ".") {
+        isDotPresentBefore = false;
+      } else if (isOperation(lastChar)) {
+        if (prevOperatorCount >= 1) prevOperatorCount--;
+      }
+      currentExpression = removeLastChar(currentExpression);
+
+      if (!currentExpression.length) {
+        currentExpression = "0";
+        resetAllFlags();
+      } else {
+        lastChar = currentExpression.at(-1);
+        if (isNumber(lastChar)) {
+          isNumPresentBefore = true;
+        } else if (isOperation(lastChar)) {
+          if (!prevOperatorCount) prevOperatorCount++;
+        }
+      }
+    } else if (keyPressedLower === "reset") {
+      currentExpression = "0";
+      resetAllFlags();
+    } else if (keyPressedLower === "=") {
+      for (let i = 1; i <= 2; i++) {
+        if (isOperation(currentExpression.at(-1)))
+          currentExpression = removeLastChar(currentExpression);
+      }
+      currentExpression = calculateExpression(currentExpression);
     }
   }
-  // if the last value is any operation or dot and the present key pressed value is any operation then remove the last and add the present keypressed.
-  else if (
-    !!currentInputValue.length &&
-    (operations.includes(currentInputValue.at(-1)) ||
-      currentInputValue.at(-1) === ".") &&
-    operations.includes(keyPressed)
-  ) {
-    let prev = currentInputValue.split("");
-    prev.splice(-1);
-    prev = prev.join("");
-    inputNumbers.textContent = prev + keyPressed;
-  }
-  // if the last value is any operation and the current value is . then it'll take it as floating number like (0.something)
-  else {
-    inputNumbers.textContent = currentInputValue + keyPressed;
-  }
+  inputNumbers.textContent = currentExpression;
 }
 
 window.addEventListener("load", function () {
@@ -173,12 +214,12 @@ window.addEventListener("load", function () {
     0,
     "/",
     "*",
-    // "X",
   ];
   allSmallButtonsContainer.innerHTML = "";
   btnVals.forEach((val) =>
     allSmallButtonsContainer.appendChild(createButton(val))
   );
+  inputNumbers.textContent = "0";
 });
 
 window.addEventListener("keypress", function (e) {
@@ -196,7 +237,7 @@ allButtonsContainer.addEventListener("click", function (e) {
   if (e.target.tagName !== "BUTTON") {
     return;
   }
-  const currentInputValue = inputNumbers.textContent.toString();
+  const currentInputValue = inputNumbers.textContent.toString().trim();
   const keyPressed = e.target.textContent.toString();
 
   validateAndUpdateInput(currentInputValue, keyPressed);

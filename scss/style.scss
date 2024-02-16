@@ -63,6 +63,7 @@ body {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                border: none;
 
                 &.btn-delete,
                 &.btn-reset {
@@ -81,6 +82,13 @@ body {
                 &.btn-equal,
                 &.btn-delete {
                     font-size: 1.5rem;
+                }
+
+                &:active {
+                    border: none;
+                    transform: translateY(2px);
+                    box-shadow: 0 3px 0 $grey-color;
+                    ;
                 }
             }
         }
