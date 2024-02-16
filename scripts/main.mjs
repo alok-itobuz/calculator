@@ -20,7 +20,7 @@ function isOperation(op) {
 }
 
 function isValidLetter(val) {
-  return (val >= "0" && val <= "9") || operations.includes(val) || val == ".";
+  return (val >= "0" && val <= "9") || operations.includes(val) || val === ".";
 }
 
 function isOnlyZero(str) {
@@ -45,7 +45,7 @@ function calculateExpression(expression) {
     if (flag === -1) {
       strNum += "-";
       flag = 1;
-    } else if ((x >= "0" && x <= "9") || x === "." || i == 0) {
+    } else if ((x >= "0" && x <= "9") || x === "." || i === 0) {
       strNum += x;
     } else {
       nums.push(strNum);

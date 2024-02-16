@@ -30,7 +30,7 @@ export function createButton(val) {
     `btn-${btnPostfix(val)}`
   );
 
-  if (val == "DEL") btn.classList.add("btn-delete");
+  if (val === "DEL") btn.classList.add("btn-delete");
   btn.textContent = val;
 
   btnContainer.append(btn);
